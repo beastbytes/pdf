@@ -92,63 +92,22 @@ abstract class Pdf implements PdfInterface
     /**
      * Output and/or save the document
      *
-     * @param DocumentInterface $document The document to output
+     * @param DocumentInterface $document The document to output.
      * @param string $destination Where to send the document.
-     * It can be one of the following:
-     * * D - send to the browser and force a file download with the name given by $name
-     * * F - save to a local file with the name given by $name and path by $pdfPath - this option may be used with the
-     * others, e.g. FI saves the document to a local file and sends it inline to the browser
-     * * I - send the file inline to the browser; the PDF viewer is used if available - default
-     * * S - return the document as a string
-     *
-     * @return bool|string The output result: Response if sent to the browser, raw PDF string, true is saved
-     *   only, or false if not output
-     * @throws InvalidConfigException
+     * @return mixed
      */
-    public function output(
-        DocumentInterface $document,
-        string $destination = self::DESTINATION_INLINE
-    ): bool|string
+    public function output(DocumentInterface $document, string $destination): mixed
     {
         if (!$this->beforeOutput($document)) {
             return false;
         }
 
-        $return = false;
+        $return = $document->output($destination);
 
         $this->afterOutput($document);
 
         return $return;
     }
-
-    /*
-        if (str_contains($destination, self::DESTINATION_FILE)) {
-            $destination = str_replace(self::DESTINATION_FILE, '', $destination);
-            $return = file_put_contents(
-                    Yii::getAlias($this->pdfPath) . DIRECTORY_SEPARATOR . $this->getName(),
-                    $this->getString()
-                ) !== false;
-        }
-
-        switch ($destination) {
-            case self::DESTINATION_DOWNLOAD:
-                $response = Yii::$app->response;
-                $response->format = ResponseFormatter::PDF_DOWNLOAD;
-                $response->data['name'] = $this->getName();
-                $response->content = $this->getString();
-                return $response;
-            case self::DESTINATION_INLINE:
-                $response = Yii::$app->response;
-                $response->format = ResponseFormatter::PDF_INLINE;
-                $response->data['name'] = $this->getName();
-                $response->content = $this->getString();
-                return $response;
-            case self::DESTINATION_STRING:
-                return $this->getString();
-            default:
-                return $return;
-        }
-     */
 
     /**
      * Creates a new document instance.

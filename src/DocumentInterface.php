@@ -46,6 +46,12 @@ interface DocumentInterface
     public function getTitle(): string;
 
     /**
+     * @param string $destination Where to send the document.
+     * @return mixed
+     */
+    public function output(string $destination): mixed;
+
+    /**
      * @param string $author Name of the entity (person, organisation, ...) that created the document
      * @return self
      */
