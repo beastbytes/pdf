@@ -14,9 +14,9 @@ use InvalidArgumentException;
 
 class DummyPdf extends Pdf
 {
-    public function output(
+    protected function outputDocument(
         DocumentInterface $document,
-        string $destination = Pdf::DESTINATION_INLINE
+        string $destination = 'string'
     ): bool|string
     {
         return (string)$document;

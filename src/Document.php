@@ -58,7 +58,6 @@ abstract class Document implements DocumentInterface, Stringable
     abstract public function getName(): string;
     abstract public function getSubject(): string;
     abstract public function getTitle(): string;
-    abstract public function output(string $destination): mixed;
     abstract public function withAuthor(string $author): DocumentInterface;
     abstract public function withCreator(string $creator): DocumentInterface;
     abstract public function withCustomProperties(array $customProperties): DocumentInterface;

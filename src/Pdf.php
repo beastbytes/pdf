@@ -19,24 +19,6 @@ use function str_replace;
  */
 abstract class Pdf implements PdfInterface
 {
-    // Output destination
-    /**
-     * @var string Send to browser for download
-     */
-    public const DESTINATION_DOWNLOAD = 'D';
-    /**
-     * @var string Write to file
-     */
-    public const DESTINATION_FILE = 'F';
-    /**
-     * @var string Send to browser for inline display
-     */
-    public const DESTINATION_INLINE = 'I';
-    /**
-     * @var string Output a raw PDF string
-     */
-    public const DESTINATION_STRING = 'S';
-
     public function __construct(
         private DocumentFactoryInterface $documentFactory,
         private DocumentGenerator $documentGenerator,
@@ -90,9 +72,9 @@ abstract class Pdf implements PdfInterface
     }
 
     /**
-     * Output and/or save the document
+     * Output and/or save the document.
      *
-     * @param DocumentInterface $document The document to output.
+     * @param DocumentInterface $document The document instance.
      * @param string $destination Where to send the document.
      * @return mixed
      */
@@ -102,7 +84,7 @@ abstract class Pdf implements PdfInterface
             return false;
         }
 
-        $return = $document->output($destination);
+        $return = $this->outputDocument($document, $destination);
 
         $this->afterOutput($document);
 
@@ -118,6 +100,15 @@ abstract class Pdf implements PdfInterface
     {
         return $this->documentFactory->create();
     }
+
+    /**
+     * Outputs the document.
+     *
+     * @param DocumentInterface $document The document instance.
+     * @param string $destination Where to send the document.
+     * @return mixed
+     */
+    abstract protected function outputDocument(DocumentInterface $document, string $destination): mixed;
 
     /**
      * This method is invoked right before outputting the document.
