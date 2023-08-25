@@ -11,7 +11,6 @@ namespace BeastBytes\PDF\Tests\Support;
 use BeastBytes\PDF\DocumentFactory;
 use BeastBytes\PDF\DocumentFactoryInterface;
 use BeastBytes\PDF\DocumentGenerator;
-use BeastBytes\PDF\DocumentTemplate;
 use BeastBytes\PDF\PdfInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
