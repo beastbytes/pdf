@@ -26,9 +26,9 @@ interface DocumentInterface
     public function getCustomProperties(): array;
 
     /**
-     * @return array<string> Keywords for the document
+     * @return string Keywords for the document
      */
-    public function getKeywords(): array;
+    public function getKeywords(): string;
 
     /**
      * @return string Name of the document when displayed in the browser, downloaded, or saved

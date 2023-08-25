@@ -41,11 +41,13 @@ abstract class Document implements DocumentInterface, Stringable
             return call_user_func_array([$this->pdf, $name], $params);
         }
 
+        /*
         foreach ($this->helpers as $helper) {
             if (method_exists($helper, $name)) {
                 return call_user_func_array([$helper, $name], $params);
             }
         }
+        */
 
         throw new BadMethodCallException(strtr(self::BAD_METHOD_EXCEPTION, ['{name}' => $name]));
     }
@@ -54,7 +56,7 @@ abstract class Document implements DocumentInterface, Stringable
     abstract public function getAuthor(): string;
     abstract public function getCreator(): string;
      abstract public function getCustomProperties(): array;
-    abstract public function getKeywords(): array;
+    abstract public function getKeywords(): string;
     abstract public function getName(): string;
     abstract public function getSubject(): string;
     abstract public function getTitle(): string;
