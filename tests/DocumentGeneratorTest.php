@@ -9,10 +9,10 @@ declare(strict_types=1);
 namespace BeastBytes\PDF\Tests;
 
 use BeastBytes\PDF\DocumentGenerator;
-use BeastBytes\PDF\DocumentTemplate;
 use BeastBytes\PDF\Tests\Support\DummyDocument;
 use BeastBytes\PDF\Tests\Support\TestCase;
 use Yiisoft\View\View;
+use Yiisoft\View\ViewContext;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -23,9 +23,9 @@ class DocumentGeneratorTest extends TestCase
     public function test_constructor(): void
     {
         $viewPath = self::getTestFilePath() . DIRECTORY_SEPARATOR . 'view';
-        $template = new DocumentTemplate($viewPath);
+        $viewContext = new ViewContext($viewPath);
 
-        $this->assertSame($viewPath, $template->getViewPath());
+        $this->assertSame($viewPath, $viewContext->getViewPath());
     }
 
     public function testWithView(): void
@@ -41,11 +41,11 @@ class DocumentGeneratorTest extends TestCase
     public function testWithTemplate(): void
     {
         $generator = $this->createGenerator(self::getTestFilePath());
-        $template = new DocumentTemplate(self::getTestFilePath());
-        $newGenerator = $generator->withTemplate($template);
+        $viewContext = new ViewContext(self::getTestFilePath());
+        $newGenerator = $generator->withViewContext($viewContext);
 
         $this->assertNotSame($generator, $newGenerator);
-        $this->assertSame($template, $this->getInaccessibleProperty($newGenerator, 'template'));
+        $this->assertSame($viewContext, $this->getInaccessibleProperty($newGenerator, 'template'));
     }
 
     public function testGenerate(): void
@@ -90,7 +90,7 @@ class DocumentGeneratorTest extends TestCase
     {
         return new DocumentGenerator(
             $this->get(View::class),
-            new DocumentTemplate($viewPath)
+            new ViewContext($viewPath)
         );
     }
 }
