@@ -10,16 +10,17 @@ namespace BeastBytes\PDF;
 
 use Throwable;
 use Yiisoft\View\View;
+use Yiisoft\View\ViewContextInterface;
 
 final class DocumentGenerator
 {
     /**
      * @param View $view The view instance.
-     * @param DocumentTemplate $template The document template instance.
+     * @param ViewContextInterface $viewContext The view context for generating PDF documents.
      */
     public function __construct(
         private View $view,
-        private DocumentTemplate $template
+        private ViewContextInterface $viewContext
     ) {
     }
 
@@ -43,7 +44,7 @@ final class DocumentGenerator
     {
         $viewParameters['document'] = $document;
         $this->view
-            ->withContext($this->template)
+            ->withContext($this->viewContext)
             ->render($view, $viewParameters)
         ;
     }
@@ -62,15 +63,15 @@ final class DocumentGenerator
     }
 
     /**
-     * Returns a new instance with the specified document template.
+     * Returns a new instance with the specified view context.
      *
-     * @param DocumentTemplate $template The document template.
+     * @param ViewContextInterface $viewContext The view context for generating PDF documents.
      * @return self The new instance.
      */
-    public function withTemplate(DocumentTemplate $template): self
+    public function withViewContext(ViewContextInterface $viewContext): self
     {
         $new = clone $this;
-        $new->template = $template;
+        $new->viewContext = $viewContext;
         return $new;
     }
 
