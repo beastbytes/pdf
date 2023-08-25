@@ -21,11 +21,6 @@ interface DocumentInterface
     public function getCreator(): string;
 
     /**
-     * @return array<string, int|string> Custom properties for the document
-     */
-    public function getCustomProperties(): array;
-
-    /**
      * @return string Keywords for the document
      */
     public function getKeywords(): string;
@@ -56,12 +51,6 @@ interface DocumentInterface
      * @return self
      */
     public function withCreator(string $creator): self;
-
-    /**
-     * @param array<string, int|string> $customProperties Custom properties for the document
-     * @return self
-     */
-    public function withCustomProperties(array $customProperties): self;
 
     /**
      * @param string ...$keywords Keywords for the document
