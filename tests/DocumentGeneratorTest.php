@@ -45,7 +45,7 @@ class DocumentGeneratorTest extends TestCase
         $newGenerator = $generator->withViewContext($viewContext);
 
         $this->assertNotSame($generator, $newGenerator);
-        $this->assertSame($viewContext, $this->getInaccessibleProperty($newGenerator, 'template'));
+        $this->assertSame($viewContext, $this->getInaccessibleProperty($newGenerator, 'viewContext'));
     }
 
     public function testGenerate(): void

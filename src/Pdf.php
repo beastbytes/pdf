@@ -11,8 +11,7 @@ namespace BeastBytes\PDF;
 use BeastBytes\PDF\Event\AfterOutput;
 use BeastBytes\PDF\Event\BeforeOutput;
 use Psr\EventDispatcher\EventDispatcherInterface;
-
-use function str_replace;
+use Yiisoft\View\ViewContextInterface;
 
 /**
  * Generate a PDF document.
@@ -28,17 +27,17 @@ abstract class Pdf implements PdfInterface
     }
 
     /**
-     * Returns a new instance with the specified document template.
+     * Returns a new instance with the specified view context.
      *
-     * @param DocumentTemplate $template The document template instance.
+     * @param ViewContextInterface $viewContext The document template instance.
      * @return self The new instance.
      */
-    public function withTemplate(DocumentTemplate $template): self
+    public function withViewContext(ViewContextInterface $viewContext): self
     {
         $new = clone $this;
         $new->documentGenerator = $new
             ->documentGenerator
-            ->withTemplate($template)
+            ->withViewContext($viewContext)
         ;
         return $new;
     }

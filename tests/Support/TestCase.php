@@ -19,6 +19,7 @@ use ReflectionClass;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use Yiisoft\Test\Support\EventDispatcher\SimpleEventDispatcher;
 use Yiisoft\View\View;
+use Yiisoft\View\ViewContext;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -48,17 +49,17 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $tempDir = self::getTestFilePath();
             $eventDispatcher = new SimpleEventDispatcher();
             $view = new View($tempDir, $eventDispatcher);
-            $documentTemplate = new DocumentTemplate($tempDir, '', '');
-            $documentGenerator = new DocumentGenerator($view, $documentTemplate);
+            $viewContext = new ViewContext($tempDir);
+            $documentGenerator = new DocumentGenerator($view, $viewContext);
             $documentFactory = new DocumentFactory(DummyDocument::class, []);
 
             $this->container = new SimpleContainer([
                 EventDispatcherInterface::class => $eventDispatcher,
                 PdfInterface::class => new DummyPdf($documentFactory, $documentGenerator, $eventDispatcher),
-                DocumentGenerator::class => new DocumentGenerator($view, $documentTemplate),
-                DocumentTemplate::class => $documentTemplate,
+                DocumentGenerator::class => new DocumentGenerator($view, $viewContext),
                 DocumentFactoryInterface::class => $documentFactory,
                 View::class => $view,
+                ViewContext::class => $viewContext,
             ]);
         }
 
