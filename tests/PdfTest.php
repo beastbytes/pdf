@@ -46,10 +46,10 @@ class PdfTest extends TestCase
 
         $viewName = 'test-view';
         $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
-        $this->saveFile($viewFileName, "<?php\n" . '$document->setText("' . self::TEST_TEXT . '");');
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
 
         $document = $pdf->generate($viewName);
-        $this->assertSame(self::TEST_TEXT, (string)$document);
+        $this->assertSame(self::TEST_TEXT . "\n", (string)$document);
     }
 
     public function testGenerateWithLocale(): void
@@ -66,14 +66,14 @@ class PdfTest extends TestCase
         $viewFileName = $viewPath . DIRECTORY_SEPARATOR . self::TEST_LOCALE . DIRECTORY_SEPARATOR . $viewName . '.php';
         $this->saveFile(
             $viewFileName,
-            "<?php\n" . '$document->setText("' . self::TEST_LOCALE . ' ' . self::TEST_TEXT . '");'
+            "<?php\n" . '$document->writeLine("' . self::TEST_LOCALE . ' ' . self::TEST_TEXT . '");'
         );
 
         $document = $pdf
             ->withLocale('de_DE')
             ->generate($viewName)
         ;
-        $this->assertSame(self::TEST_LOCALE . ' ' . self::TEST_TEXT, (string)$document);
+        $this->assertSame(self::TEST_LOCALE . ' ' . self::TEST_TEXT . "\n", (string)$document);
     }
 
     public function testBeforeOutput(): void
@@ -101,7 +101,7 @@ class PdfTest extends TestCase
 
         $viewName = 'test-view';
         $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
-        $this->saveFile($viewFileName, "<?php\n" . '$document->setText("' . self::TEST_TEXT . '");');
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
 
         $document = $pdf->generate($viewName);
         $pdf->afterOutput($document);

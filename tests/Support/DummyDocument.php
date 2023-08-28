@@ -17,8 +17,9 @@ class DummyDocument extends Document
     private string $author = '';
     private string $creator = '';
     private array $customProperties = [];
-    private array $keywords = [];
+    private string $keywords = '';
     private string $name = '';
+    private string $path = '';
     private string $subject = '';
     private string $title = '';
 
@@ -50,7 +51,7 @@ class DummyDocument extends Document
         return $this->customProperties;
     }
 
-    public function getKeywords(): array
+    public function getKeywords(): string
     {
         return $this->keywords;
     }
@@ -58,6 +59,11 @@ class DummyDocument extends Document
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
     }
 
     public function getSubject(): string
@@ -94,7 +100,7 @@ class DummyDocument extends Document
     public function withKeywords(string ...$keywords): DocumentInterface
     {
         $new = clone $this;
-        $new->keywords = $keywords;
+        $new->keywords = implode(' ', $keywords);
         return $new;
     }
 
@@ -104,6 +110,14 @@ class DummyDocument extends Document
         $new->name = $name;
         return $new;
     }
+
+    public function withPath(string $path): DocumentInterface
+    {
+        $new = clone $this;
+        $new->path = $path;
+        return $new;
+    }
+
 
     public function withSubject(string $subject): DocumentInterface
     {

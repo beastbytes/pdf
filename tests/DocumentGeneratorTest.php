@@ -8,8 +8,11 @@ declare(strict_types=1);
 
 namespace BeastBytes\PDF\Tests;
 
+use BadMethodCallException;
+use BeastBytes\PDF\Document;
 use BeastBytes\PDF\DocumentGenerator;
 use BeastBytes\PDF\Tests\Support\DummyDocument;
+use BeastBytes\PDF\Tests\Support\DummyHelper;
 use BeastBytes\PDF\Tests\Support\TestCase;
 use Yiisoft\View\View;
 use Yiisoft\View\ViewContext;
@@ -19,14 +22,6 @@ use const DIRECTORY_SEPARATOR;
 class DocumentGeneratorTest extends TestCase
 {
     private const TEST_LAYOUT_TEXT = "Begin Layout\n{content}\nEnd Layout";
-
-    public function test_constructor(): void
-    {
-        $viewPath = self::getTestFilePath() . DIRECTORY_SEPARATOR . 'view';
-        $viewContext = new ViewContext($viewPath);
-
-        $this->assertSame($viewPath, $viewContext->getViewPath());
-    }
 
     public function testWithView(): void
     {
@@ -38,7 +33,7 @@ class DocumentGeneratorTest extends TestCase
         $this->assertSame($view, $this->getInaccessibleProperty($newGenerator, 'view'));
     }
 
-    public function testWithTemplate(): void
+    public function testWithViewContext(): void
     {
         $generator = $this->createGenerator(self::getTestFilePath());
         $viewContext = new ViewContext(self::getTestFilePath());
@@ -57,12 +52,36 @@ class DocumentGeneratorTest extends TestCase
 
         $viewName = 'test-view';
         $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
-        $this->saveFile($viewFileName, "<?php\n" . '$document->setText("' . self::TEST_TEXT . '");');
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
 
         $document = new DummyDocument();
         $generator->generate($document, 'test-view');
 
-        $this->assertSame(self::TEST_TEXT,  (string)$document);
+        $this->assertSame(self::TEST_TEXT . "\n",  (string)$document);
+    }
+
+    public function testWithHelper(): void
+    {
+        $viewPath = self::getTestFilePath();
+        $generator = $this
+            ->createGenerator($viewPath)
+        ;
+
+        $helperText = 'Helper ' . self::TEST_TEXT;
+        $viewName = 'test-view';
+        $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
+        $this->saveFile(
+            $viewFileName,
+            "<?php\n"
+            . '$document->writeLine("' . self::TEST_TEXT . '");'
+            . '$document->writeHelperLine("' . $helperText . '");'
+        );
+
+        $document = new DummyDocument();
+        $document->withHelpers(new DummyHelper());
+        $generator->generate($document, 'test-view');
+
+        $this->assertSame(self::TEST_TEXT . "\n$helperText\n",  (string)$document);
     }
 
     public function testWithLocale(): void
@@ -78,12 +97,35 @@ class DocumentGeneratorTest extends TestCase
         $this->saveFile($viewFileName, 'not localized');
 
         $viewFileName = $viewPath . DIRECTORY_SEPARATOR . self::TEST_LOCALE . DIRECTORY_SEPARATOR . $viewName . '.php';
-        $this->saveFile($viewFileName, "<?php\n" . '$document->setText("' .self::TEST_LOCALE . ' locale");');
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' .self::TEST_LOCALE . ' locale");');
 
         $document = new DummyDocument();
         $generator->generate($document, 'test-view-locale');
 
-        $this->assertSame(self::TEST_LOCALE . ' locale',  (string)$document);
+        $this->assertSame(self::TEST_LOCALE . " locale\n",  (string)$document);
+    }
+
+    public function testMethodDoesNotExist(): void
+    {
+        $viewPath = self::getTestFilePath();
+        $generator = $this
+            ->createGenerator($viewPath)
+        ;
+
+        $viewName = 'test-view';
+        $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
+        $this->saveFile(
+            $viewFileName,
+            "<?php\n"
+            . '$document->feedDragons("' . self::TEST_TEXT . '");'
+        );
+
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage(sprintf(Document::BAD_METHOD_EXCEPTION, 'feedDragons'));
+
+        $document = new DummyDocument();
+        $document->withHelpers(new DummyHelper());
+        $generator->generate($document, 'test-view');
     }
 
     public function createGenerator(string $viewPath): DocumentGenerator

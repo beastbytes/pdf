@@ -17,8 +17,8 @@ class DummyPdfLib
         return $this->content;
     }
 
-    public function setText(string $text): void
+    public function writeLine(string $text): void
     {
-        $this->content .= $text;
+        $this->content .= "$text\n";
     }
 }

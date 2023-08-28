@@ -64,6 +64,8 @@ interface DocumentInterface
      */
     public function withName(string $name): self;
 
+    public function withPath(string $path): self;
+
     /**
      * @param string $subject Subject of the document
      * @return self
