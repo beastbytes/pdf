@@ -114,6 +114,20 @@ class PdfTest extends TestCase
         $this->assertSame(AfterOutput::class, array_pop($eventClasses));
     }
 
+    public function testOutput(): void
+    {
+        $pdf = $this->get(PdfInterface::class);
+        $viewPath = self::getTestFilePath();
+
+        $viewName = 'test-view';
+        $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
+
+        $document = $pdf->generate($viewName);
+
+        $this->assertSame(self::TEST_TEXT . "\n", $pdf->output($document, 'S'));
+    }
+
     public function testImmutability(): void
     {
         $pdf = $this->get(PdfInterface::class);
