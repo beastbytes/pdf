@@ -11,6 +11,7 @@ namespace BeastBytes\PDF;
 use BeastBytes\PDF\Event\AfterOutput;
 use BeastBytes\PDF\Event\BeforeOutput;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Message\ResponseInterface;
 use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\View\ViewContextInterface;
 
@@ -103,20 +104,6 @@ abstract class Pdf implements PdfInterface
     }
 
     /**
-     * Outputs the document.
-     *
-     * @param DocumentInterface $document The document instance.
-     * @param string $destination Where to send the document.
-     * @param DownloadResponseFactory $downloadResponseFactory
-     * @return mixed
-     */
-    abstract protected function outputDocument(
-        DocumentInterface $document,
-        string $destination,
-        DownloadResponseFactory $downloadResponseFactory
-    ): mixed;
-
-    /**
      * This method is invoked right before outputting the document.
      * Override this method to decide whether to output the document, calling the parent implementation first.
      *
@@ -146,4 +133,18 @@ abstract class Pdf implements PdfInterface
             ->dispatch(new AfterOutput($document))
         ;
     }
+
+    /**
+     * Outputs the document.
+     *
+     * @param DocumentInterface $document The document instance.
+     * @param string $destination Where to send the document.
+     * @param DownloadResponseFactory $downloadResponseFactory
+     * @return bool|string|ResponseInterface ResponseInterface if sent to browser, string, or bool if saved only
+     */
+    abstract protected function outputDocument(
+        DocumentInterface $document,
+        string $destination,
+        DownloadResponseFactory $downloadResponseFactory
+    ): bool|string|ResponseInterface;
 }
