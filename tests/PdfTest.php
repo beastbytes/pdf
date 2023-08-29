@@ -12,11 +12,15 @@ use BeastBytes\PDF\DocumentFactoryInterface;
 use BeastBytes\PDF\DocumentGenerator;
 use BeastBytes\PDF\Event\AfterOutput;
 use BeastBytes\PDF\Event\BeforeOutput;
+use BeastBytes\PDF\Pdf;
 use BeastBytes\PDF\PdfInterface;
 use BeastBytes\PDF\Tests\Support\DummyDocument;
 use BeastBytes\PDF\Tests\Support\DummyPdf;
 use BeastBytes\PDF\Tests\Support\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
+use Yiisoft\EventDispatcher\Provider\ListenerCollection;
+use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\View\ViewContext;
 
@@ -36,8 +40,14 @@ class PdfTest extends TestCase
         $this->assertNotSame($pdf, $newPdf);
         $this->assertNotSame($oldDocumentGenerator, $newDocumentGenerator);
 
-        $this->assertNotSame($viewContext, $this->getInaccessibleProperty($oldDocumentGenerator, 'viewContext'));
-        $this->assertSame($viewContext, $this->getInaccessibleProperty($newDocumentGenerator, 'viewContext'));
+        $this->assertNotSame(
+            $viewContext,
+            $this->getInaccessibleProperty($oldDocumentGenerator, 'viewContext')
+        );
+        $this->assertSame(
+            $viewContext,
+            $this->getInaccessibleProperty($newDocumentGenerator, 'viewContext')
+        );
     }
 
     public function testGenerate(): void
@@ -79,27 +89,22 @@ class PdfTest extends TestCase
 
     public function testBeforeOutput(): void
     {
-        $document = new DummyDocument();
-        $event = new BeforeOutput($document);
-        $documentFactory = $this->get(DocumentFactoryInterface::class);
-        $documentGenerator = $this->get(DocumentGenerator::class);
-        $downloadResponseFactory = $this->get(DownloadResponseFactory::class);
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $eventDispatcher
-            ->method('dispatch')
-            ->willReturn($event)
+        $pdf = $this->get(PdfInterface::class);
+        $viewPath = self::getTestFilePath();
+
+        $viewName = 'test-view';
+        $viewFileName = $viewPath . DIRECTORY_SEPARATOR . $viewName . '.php';
+        $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
+
+        $document = $pdf->generate($viewName);
+        $pdf->output($document, 'S');
+
+        $eventClasses = $this
+            ->get(EventDispatcherInterface::class)
+            ->getEventClasses()
         ;
 
-        $pdf = new DummyPdf(
-            $documentFactory,
-            $documentGenerator,
-            $eventDispatcher,
-            $downloadResponseFactory
-        );
-
-        $this->assertTrue($pdf->beforeOutput($document));
-        $event->stopPropagation();
-        $this->assertFalse($pdf->beforeOutput($document));
+        $this->assertSame(BeforeOutput::class, $eventClasses[2]);
     }
 
     public function testAfterOutput(): void
@@ -112,14 +117,14 @@ class PdfTest extends TestCase
         $this->saveFile($viewFileName, "<?php\n" . '$document->writeLine("' . self::TEST_TEXT . '");');
 
         $document = $pdf->generate($viewName);
-        $pdf->afterOutput($document);
+        $pdf->output($document, 'S');
 
         $eventClasses = $this
             ->get(EventDispatcherInterface::class)
             ->getEventClasses()
         ;
 
-        $this->assertSame(AfterOutput::class, array_pop($eventClasses));
+        $this->assertSame(AfterOutput::class, $eventClasses[3]);
     }
 
     public function testOutput(): void
@@ -141,5 +146,13 @@ class PdfTest extends TestCase
         $pdf = $this->get(PdfInterface::class);
 
         $this->assertNotSame($pdf, $pdf->withLocale('de_DE'));
+    }
+
+    private function createProvider(): Provider
+    {
+        return new Provider((new ListenerCollection())
+            ->add([$this, 'afterOutput'], AfterOutput::class)
+            ->add([$this, 'beforeOutput'], BeforeOutput::class)
+        );
     }
 }

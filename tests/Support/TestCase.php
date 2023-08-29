@@ -12,6 +12,7 @@ use BeastBytes\PDF\DocumentFactory;
 use BeastBytes\PDF\DocumentFactoryInterface;
 use BeastBytes\PDF\DocumentGenerator;
 use BeastBytes\PDF\PdfInterface;
+use BeastBytes\PDF\Pdf;
 use HttpSoft\Message\ResponseFactory;
 use HttpSoft\Message\StreamFactory;
 use Psr\Container\ContainerInterface;
@@ -58,7 +59,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
             $this->container = new SimpleContainer([
                 EventDispatcherInterface::class => $eventDispatcher,
-                PdfInterface::class => new DummyPdf(
+                PdfInterface::class => new Pdf(
                     $documentFactory,
                     $documentGenerator,
                     $eventDispatcher,

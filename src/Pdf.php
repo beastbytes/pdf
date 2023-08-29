@@ -18,7 +18,7 @@ use Yiisoft\View\ViewContextInterface;
 /**
  * Generate a PDF document.
  */
-abstract class Pdf implements PdfInterface
+final class Pdf implements PdfInterface
 {
     public function __construct(
         private DocumentFactoryInterface $documentFactory,
@@ -61,6 +61,9 @@ abstract class Pdf implements PdfInterface
         return $new;
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function generate($view, array $viewParameters = []): DocumentInterface
     {
         $document = $this->createDocument();
@@ -98,7 +101,7 @@ abstract class Pdf implements PdfInterface
      *
      * @return DocumentInterface The document instance.
      */
-    protected function createDocument(): DocumentInterface
+    private function createDocument(): DocumentInterface
     {
         return $this->documentFactory->create();
     }
@@ -110,7 +113,7 @@ abstract class Pdf implements PdfInterface
      * @param DocumentInterface $document The document instance.
      * @return bool Whether to output the document.
      */
-    protected function beforeOutput(DocumentInterface $document): bool
+    private function beforeOutput(DocumentInterface $document): bool
     {
         /** @var BeforeOutput $event */
         $event = $this
@@ -126,7 +129,7 @@ abstract class Pdf implements PdfInterface
      *
      * @param DocumentInterface $document The document instance.
      */
-    protected function afterOutput(DocumentInterface $document): void
+    private function afterOutput(DocumentInterface $document): void
     {
         $this
             ->eventDispatcher
