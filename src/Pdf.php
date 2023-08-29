@@ -78,15 +78,15 @@ abstract class Pdf implements PdfInterface
      *
      * @param DocumentInterface $document The document instance.
      * @param string $destination Where to send the document.
-     * @return mixed
+     * @return string|ResponseInterface|bool
      */
-    public function output(DocumentInterface $document, string $destination): mixed
+    public function output(DocumentInterface $document, string $destination): string|ResponseInterface|bool
     {
         if (!$this->beforeOutput($document)) {
             return false;
         }
 
-        $return = $this->outputDocument($document, $destination);
+        $return = $document->output($destination,  $this->downloadResponseFactory);
 
         $this->afterOutput($document);
 
@@ -133,18 +133,4 @@ abstract class Pdf implements PdfInterface
             ->dispatch(new AfterOutput($document))
         ;
     }
-
-    /**
-     * Outputs the document.
-     *
-     * @param DocumentInterface $document The document instance.
-     * @param string $destination Where to send the document.
-     * @param DownloadResponseFactory $downloadResponseFactory
-     * @return bool|string|ResponseInterface ResponseInterface if sent to browser, string, or bool if saved only
-     */
-    abstract protected function outputDocument(
-        DocumentInterface $document,
-        string $destination,
-        DownloadResponseFactory $downloadResponseFactory
-    ): bool|string|ResponseInterface;
 }

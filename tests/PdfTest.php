@@ -17,6 +17,7 @@ use BeastBytes\PDF\Tests\Support\DummyDocument;
 use BeastBytes\PDF\Tests\Support\DummyPdf;
 use BeastBytes\PDF\Tests\Support\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\View\ViewContext;
 
 use const DIRECTORY_SEPARATOR;
@@ -82,12 +83,19 @@ class PdfTest extends TestCase
         $event = new BeforeOutput($document);
         $documentFactory = $this->get(DocumentFactoryInterface::class);
         $documentGenerator = $this->get(DocumentGenerator::class);
+        $downloadResponseFactory = $this->get(DownloadResponseFactory::class);
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher
             ->method('dispatch')
             ->willReturn($event)
         ;
-        $pdf = new DummyPdf($documentFactory, $documentGenerator, $eventDispatcher);
+
+        $pdf = new DummyPdf(
+            $documentFactory,
+            $documentGenerator,
+            $eventDispatcher,
+            $downloadResponseFactory
+        );
 
         $this->assertTrue($pdf->beforeOutput($document));
         $event->stopPropagation();

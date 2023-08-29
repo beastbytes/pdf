@@ -10,7 +10,9 @@ namespace BeastBytes\PDF;
 
 use BadMethodCallException;
 use BeastBytes\PDF\Helper\Helper;
+use Psr\Http\Message\ResponseInterface;
 use Stringable;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 
 abstract class Document implements DocumentInterface, Stringable
 {
@@ -60,6 +62,11 @@ abstract class Document implements DocumentInterface, Stringable
     abstract public function getPath(): string;
     abstract public function getSubject(): string;
     abstract public function getTitle(): string;
+    abstract public function output(
+        string $destination,
+        DownloadResponseFactory $downloadResponseFactory
+    ): bool|string|ResponseInterface;
+
     abstract public function withAuthor(string $author): DocumentInterface;
     abstract public function withCreator(string $creator): DocumentInterface;
     abstract public function withKeywords(string ...$keywords): DocumentInterface;

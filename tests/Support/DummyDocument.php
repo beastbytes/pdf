@@ -10,9 +10,11 @@ namespace BeastBytes\PDF\Tests\Support;
 
 use BeastBytes\PDF\Document;
 use BeastBytes\PDF\DocumentInterface;
+use Psr\Http\Message\ResponseInterface;
 use stdClass;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 
-class DummyDocument extends Document
+final class DummyDocument extends Document
 {
     private string $author = '';
     private string $creator = '';
@@ -74,6 +76,13 @@ class DummyDocument extends Document
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    public function output(
+        string $destination,
+        DownloadResponseFactory $downloadResponseFactory
+    ): bool|string|ResponseInterface {
+        return (string)$this;
     }
 
     public function withAuthor(string $author): DocumentInterface

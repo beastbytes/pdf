@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace BeastBytes\PDF;
 
+use Psr\Http\Message\ResponseInterface;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
+
 interface DocumentInterface
 {
     /**
@@ -39,6 +42,11 @@ interface DocumentInterface
      * @return string Document title
      */
     public function getTitle(): string;
+
+    public function output(
+        string $destination,
+        DownloadResponseFactory $downloadResponseFactory
+    ): bool|string|ResponseInterface;
 
     /**
      * @param string $author Name of the entity (person, organisation, ...) that created the document

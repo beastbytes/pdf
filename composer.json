@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": "^8.0",
+        "httpsoft/http-message": "^1.0",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/response-download": "^1.0",
         "yiisoft/view": "^8.0"

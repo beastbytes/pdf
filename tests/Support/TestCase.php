@@ -12,9 +12,12 @@ use BeastBytes\PDF\DocumentFactory;
 use BeastBytes\PDF\DocumentFactoryInterface;
 use BeastBytes\PDF\DocumentGenerator;
 use BeastBytes\PDF\PdfInterface;
+use HttpSoft\Message\ResponseFactory;
+use HttpSoft\Message\StreamFactory;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionClass;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\Test\Support\Container\SimpleContainer;
 use Yiisoft\Test\Support\EventDispatcher\SimpleEventDispatcher;
 use Yiisoft\View\View;
@@ -51,10 +54,17 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $viewContext = new ViewContext($tempDir);
             $documentGenerator = new DocumentGenerator($view, $viewContext);
             $documentFactory = new DocumentFactory(DummyDocument::class, []);
+            $downloadResponseFactory = new DownloadResponseFactory(new ResponseFactory(), new StreamFactory());
 
             $this->container = new SimpleContainer([
                 EventDispatcherInterface::class => $eventDispatcher,
-                PdfInterface::class => new DummyPdf($documentFactory, $documentGenerator, $eventDispatcher),
+                PdfInterface::class => new DummyPdf(
+                    $documentFactory,
+                    $documentGenerator,
+                    $eventDispatcher,
+                    $downloadResponseFactory
+                ),
+                DownloadResponseFactory::class => $downloadResponseFactory,
                 DocumentGenerator::class => new DocumentGenerator($view, $viewContext),
                 DocumentFactoryInterface::class => $documentFactory,
                 View::class => $view,
