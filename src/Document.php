@@ -22,6 +22,11 @@ abstract class Document implements DocumentInterface, Stringable
      */
     protected object $pdf;
 
+    public function __construct()
+    {
+
+    }
+
     /**
      * Called if an unrecognised method is called
      *

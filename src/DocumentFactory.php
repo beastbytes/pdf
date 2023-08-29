@@ -16,7 +16,6 @@ class DocumentFactory implements DocumentFactoryInterface
 
     /**
      * @var string The document class name.
-     *
      * @psalm-var class-string<DocumentInterface>
      */
     private string $class;

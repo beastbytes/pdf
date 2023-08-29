@@ -11,6 +11,7 @@ namespace BeastBytes\PDF;
 use BeastBytes\PDF\Event\AfterOutput;
 use BeastBytes\PDF\Event\BeforeOutput;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\View\ViewContextInterface;
 
 /**
@@ -21,7 +22,8 @@ abstract class Pdf implements PdfInterface
     public function __construct(
         private DocumentFactoryInterface $documentFactory,
         private DocumentGenerator $documentGenerator,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
+        private DownloadResponseFactory $downloadResponseFactory
     )
     {
     }
@@ -105,9 +107,14 @@ abstract class Pdf implements PdfInterface
      *
      * @param DocumentInterface $document The document instance.
      * @param string $destination Where to send the document.
+     * @param DownloadResponseFactory $downloadResponseFactory
      * @return mixed
      */
-    abstract protected function outputDocument(DocumentInterface $document, string $destination): mixed;
+    abstract protected function outputDocument(
+        DocumentInterface $document,
+        string $destination,
+        DownloadResponseFactory $downloadResponseFactory
+    ): mixed;
 
     /**
      * This method is invoked right before outputting the document.
