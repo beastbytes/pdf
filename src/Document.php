@@ -16,16 +16,13 @@ abstract class Document implements DocumentInterface, Stringable
 {
     public const BAD_METHOD_EXCEPTION = 'Method `%s()` not found';
 
+    protected const MIME_TYPE = 'application/pdf';
+
     protected array $helpers = [];
     /**
      * @var object $pdf The pdf library
      */
     protected object $pdf;
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * Called if an unrecognised method is called
